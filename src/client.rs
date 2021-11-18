@@ -32,11 +32,11 @@ impl Client {
         Self { connection_manager }
     }
 
-    pub fn start(&mut self) {
+    pub fn start(self) {
         self.connection_manager.start();
     }
 
-    fn execute<A, E>(&mut self, cmd: Command, args: A, evt: Option<Event>) -> Result<Payload<E>>
+    fn execute<A, E>(self, cmd: Command, args: A, evt: Option<Event>) -> Result<Payload<E>>
         where A: Serialize + Send + Sync,
               E: Serialize + DeserializeOwned + Send + Sync
     {
@@ -52,14 +52,14 @@ impl Client {
     }
 
     #[cfg(feature = "rich_presence")]
-    pub fn set_activity<F>(&mut self, f: F) -> Result<Payload<Activity>>
+    pub fn set_activity<F>(self, f: F) -> Result<Payload<Activity>>
         where F: FnOnce(Activity) -> Activity
     {
         self.execute(Command::SetActivity, SetActivityArgs::new(f), None)
     }
 
     #[cfg(feature = "rich_presence")]
-    pub fn clear_activity(&mut self) -> Result<Payload<Activity>> {
+    pub fn clear_activity(self) -> Result<Payload<Activity>> {
         self.execute(Command::SetActivity, SetActivityArgs::default(), None)
     }
 
@@ -67,22 +67,22 @@ impl Client {
     //       SEND_ACTIVITY_JOIN_INVITE and CLOSE_ACTIVITY_REQUEST are,
     //       they are not documented.
     #[cfg(feature = "rich_presence")]
-    pub fn send_activity_join_invite(&mut self, user_id: u64) -> Result<Payload<Value>> {
+    pub fn send_activity_join_invite(self, user_id: u64) -> Result<Payload<Value>> {
         self.execute(Command::SendActivityJoinInvite, SendActivityJoinInviteArgs::new(user_id), None)
     }
 
     #[cfg(feature = "rich_presence")]
-    pub fn close_activity_request(&mut self, user_id: u64) -> Result<Payload<Value>> {
+    pub fn close_activity_request(self, user_id: u64) -> Result<Payload<Value>> {
         self.execute(Command::CloseActivityRequest, CloseActivityRequestArgs::new(user_id), None)
     }
 
-    pub fn subscribe<F>(&mut self, evt: Event, f: F) -> Result<Payload<Subscription>>
+    pub fn subscribe<F>(self, evt: Event, f: F) -> Result<Payload<Subscription>>
         where F: FnOnce(SubscriptionArgs) -> SubscriptionArgs
     {
         self.execute(Command::Subscribe, f(SubscriptionArgs::new()), Some(evt))
     }
 
-    pub fn unsubscribe<F>(&mut self, evt: Event, f: F) -> Result<Payload<Subscription>>
+    pub fn unsubscribe<F>(self, evt: Event, f: F) -> Result<Payload<Subscription>>
         where F: FnOnce(SubscriptionArgs) -> SubscriptionArgs
     {
         self.execute(Command::Unsubscribe, f(SubscriptionArgs::new()), Some(evt))

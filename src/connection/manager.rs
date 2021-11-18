@@ -44,7 +44,7 @@ impl Manager {
         }
     }
 
-    pub fn start(&mut self) {
+    pub fn start(self) {
         let manager_inner = self.clone();
         thread::spawn(move || {
             send_and_receive_loop(manager_inner);
